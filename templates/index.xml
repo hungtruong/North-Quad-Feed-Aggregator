@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<root>{% for event in events%}
+  <event>
+	<title>{{event.title}}</title>
+	<time>{{event.start|date:"l, F jS g:i A"}} to {{event.end|date:"g:i A"}}</time>
+	<description>{{event.description}}</description>
+	<location>{{event.where}}</location>
+	<link>{{event.link}}</link>
+	<author>{{event.author}}</author>
+  </event>{% endfor %}
+</root>
