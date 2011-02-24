@@ -1,0 +1,2 @@
+title,body,event_start,event_end,location,link,author,GUID{% for event in events%}
+"{{event.title|addslashes}}","{{event.description|addslashes}}","{{event.start|date:"Y-m-d H:i"}}","{{event.end|date:"Y-m-d H:i"}}","{{event.where|addslashes}}","{{event.link}}","{{event.author|addslashes}}","{{event.guid}}"{% endfor %}

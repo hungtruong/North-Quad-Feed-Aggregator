@@ -1,0 +1,37 @@
+================================================
+Hung's documentation on the North Quad Feed stuff
+================================================
+
+
+==Intro==
+The upcoming events system for North Quad is powered by a Google App Engine app that parses multiple feed formats and outputs them into a standard format that can be used by the content management system powering the large monitors in and around North Quad. The output from this app is also used to create events in the North Quad Drupal site. This document describes how the App Engine program works. It should be a good starting point for someone who wants to modify it.
+
+==The App==
+The app is a standard Google App Engine App. It does not make use of the datastore but does use a memcache to store events (this is so that it does not need to poll the external sources too often). The main files where the magic works are main.py and functions.py.
+
+==main.py==
+
+main.py handles the http requests and calls the required functions in functions.py. main.py also determines which feeds to display and in which format by using the http GET parameters. For example,
+
+http://northquadfeed.appspot.com/?feeds=SI,GSP&format=csv
+
+will output the SI and Global Scholars feeds in csv format. A default output is also defined which will be shown if no parameters are explicitly set.
+
+To add new feeds, add a feed to the python dictionary that begins with:
+
+    feeds = {
+
+The feeds have a type, a url and, for sharepoint feeds, a default location. Once you add a feed, you can access it by including its name as a parameter in the URL, or by adding it to the list of default feeds.
+
+==functions.py==
+functions.py contains the code that is used to parse specific feeds. The three feed types that are currently supported are Google Calendar, Sharepoint (which is used internally at North Quad for scheduling meeting rooms and events) and the format used by the LSA content management system. Additional formats can be integrated by writing a new function for the feed and outputting a list of event in the North Quad format. A North Quad event will have the following properties:
+
+ - start: the start time of the event as a python datetime object.
+ - end: the end time of the event as a python datetime object.
+ - title: the description of the event.
+ - where: the location of the event.
+ - link: a url to more information about the event.
+ - author: the author or creator of the event.
+ - guid: a unique identifier for the event. This is implemented as the md5 hash of the event's start time and title in ISO 8601 format.
+
+The events are collected from each feed and cached for 10 minutes. 

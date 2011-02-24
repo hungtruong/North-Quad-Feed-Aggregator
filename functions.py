@@ -8,6 +8,7 @@ from datetime import date
 from datetime import timedelta
 import logging
 from django.utils import simplejson as json
+import hashlib
 import re
 
 
@@ -43,13 +44,15 @@ def handle_google_cal(url):
 			  author = feedevents["author"][0]["name"]["$t"]
 			  
 			  if (start >= datetime(today.year, today.month, today.day, 0)) and (start <= (datetime(today.year, today.month, today.day, 0) + timedelta(30))):
-			    events.append(dict(start=start, end=end, title=title, description=description,
-			    where=where, link=link, author=author))
+					guid = start.isoformat() + title.encode("utf-8")
+					guid = hashlib.md5(guid).hexdigest()
+					events.append(dict(start=start, end=end, title=title, description=description,
+					where=where, link=link, author=author, guid=guid))
 			#add the events we just compiled to the memcache
 			memcache.add(url, events, 60*10)
 	return events
 
-def handle_sharepoint_cal(url):
+def handle_sharepoint_cal(url,defaultlocation):
 	events = memcache.get(url)
 	if events is None:
 		today = date.today()
@@ -79,8 +82,10 @@ def handle_sharepoint_cal(url):
 				elif pieces[0] == 'Description':
 				  description = pieces[2]
 			  if (start >= datetime(today.year, today.month, today.day, 0)) and (start <= (datetime(today.year, today.month, today.day, 0) + timedelta(30))):
-			    events.append(dict(start=start, end=end, title=title, description=description,
-			    where='Media Gateway', link=link, author=author))
+					guid = start.isoformat() + title.encode("utf-8")
+					guid = hashlib.md5(guid).hexdigest()
+					events.append(dict(start=start, end=end, title=title, description=description,
+						where=defaultlocation, link=link, author=author, guid=guid))
 			memcache.add(url, events, 60*10)
 	return events
 
@@ -100,17 +105,18 @@ def handle_lsa_feed(url):
     doc = xml.dom.minidom.parseString(content)
     for node in doc.getElementsByTagName("event"):
       title = node.getElementsByTagName("title")[0].firstChild.data
-      #link = node.getElementsByTagName("link")[0].firstChild.data
-      #author = node.getElementsByTagName("author")[0].firstChild.data
+      link = node.getElementsByTagName("link")[0].firstChild.data
+      author = node.getElementsByTagName("author")[0].firstChild.data
       location = node.getElementsByTagName("location")[0].firstChild.data
-      author = ""
       description = node.getElementsByTagName("description")[0].firstChild.data
       startstring = node.getElementsByTagName("startDateEvent")[0].firstChild.data + " " + node.getElementsByTagName("startTime")[0].firstChild.data
       endstring = node.getElementsByTagName("endDateEvent")[0].firstChild.data + " " + node.getElementsByTagName("endTime")[0].firstChild.data
       start = datetime.strptime(startstring, "%Y-%m-%d %I:%M %p")
       end = datetime.strptime(endstring, "%Y-%m-%d %I:%M %p")
       if (start >= datetime(today.year, today.month, today.day, 0)) and (start <= (datetime(today.year, today.month, today.day, 0) + timedelta(30))):
-       events.append(dict(start=start, end=end, title=title, description=description, where=location, link="", author=author))
+				guid = start.isoformat() + title.encode("utf-8")
+				guid = hashlib.md5(guid).hexdigest()
+				events.append(dict(start=start, end=end, title=title, description=description, where=location, link=link, author=author, guid=guid))
     memcache.add(url, events, 60*10)
   return events
 
