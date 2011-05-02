@@ -19,12 +19,12 @@ class MainHandler(webapp.RequestHandler):
   def get(self):
 	#Set up the various feeds and their "types"
 	feeds = {
-		'SI': {'type':'gcal', 'url':'http://www.google.com/calendar/feeds/si.umich.edu%40gmail.com/public/full?alt=json&ctz=America/Detroit'},
+		'SI': {'type':'gcal', 'url':'http://www.google.com/calendar/feeds/si.umich.edu%40gmail.com/public/full?alt=json&ctz=America/Detroit&futureevents=true'},
 		'COMM':{'type':'lsa', 'url':'http://www.lsa.umich.edu/vgn-ext-templating/resources/templates/events/xml.jsp?curSiteName=comm&department=comm&channelId=4a087b81da325210VgnVCM10000055b1d38dRCRD'},
 		'SCW':{'type':'lsa', 'url':'http://www.lsa.umich.edu/vgn-ext-templating/resources/templates/events/xml.jsp?curSiteName=sweetland&department=sweetland&channelId=4a087b81da325210VgnVCM10000055b1d38dRCRD'},
 		'MGW':{'type':'sharepoint', 'url':'https://sharepoint.umich.edu/univlib/northquad/_layouts/listfeed.aspx?List={9FB5EB42-3278-44E0-BCC4-7E964DFCAC9D}','defaultlocation':'Media Gateway'},
 		'NQ':{'type':'sharepoint', 'url':'https://sharepoint.umich.edu/univlib/northquad/_layouts/listfeed.aspx?List={F008BBA6-E20A-470C-8C49-6E654A6F433E}','defaultlocation':'North Quad'},
-		'GSP':{'type':'gcal', 'url':'http://www.google.com/calendar/feeds/dk38kh585r0lql859ol81oqrtc%40group.calendar.google.com/public/full?alt=json&ctz=America/Detroit'}
+		'GSP':{'type':'gcal', 'url':'http://www.google.com/calendar/feeds/dk38kh585r0lql859ol81oqrtc%40group.calendar.google.com/public/full?alt=json&ctz=America/Detroit&futureevents=true'}
 		}
 	
 	defaultfeeds = 'SI,MGW,GSP,COMM,SCW'

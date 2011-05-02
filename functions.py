@@ -43,7 +43,7 @@ def handle_google_cal(url):
 			  link = feedevents["link"][0]["href"]
 			  author = feedevents["author"][0]["name"]["$t"]
 			  
-			  if (start >= datetime(today.year, today.month, today.day, 0)) and (start <= (datetime(today.year, today.month, today.day, 0) + timedelta(30))):
+			  if ((start >= datetime(today.year, today.month, today.day, 0)) and (start <= (datetime(today.year, today.month, today.day, 0) + timedelta(30)))):
 					guid = start.isoformat() + title.encode("utf-8")
 					guid = hashlib.md5(guid).hexdigest()
 					events.append(dict(start=start, end=end, title=title, description=description,
